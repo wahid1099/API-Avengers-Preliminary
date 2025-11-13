@@ -39,7 +39,7 @@ pipeline {
     post {
         always {
             echo "Cleaning up..."
-            sh 'docker-compose down'
+            sh 'docker-compose down || true'
         }
         success {
             echo "Pipeline completed successfully!"

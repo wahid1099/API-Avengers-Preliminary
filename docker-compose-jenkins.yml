@@ -2,12 +2,22 @@ version: "3.9"
 services:
   jenkins:
     image: jenkins/jenkins:lts
+    user: root # Run as root to access Docker socket
     privileged: true # Required for Docker commands
     ports:
       - "8080:8080"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock # Bind Docker socket
-      - /usr/bin/docker:/usr/bin/docker # Optional: maps Docker CLI
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      apt-get update &&
+      apt-get install -y docker.io docker-compose &&
+      chmod 666 /var/run/docker.sock &&
+      /usr/local/bin/jenkins.sh
+      "
 volumes:
   jenkins_home:
